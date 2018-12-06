@@ -1,73 +1,46 @@
-# Trustpair Ruby back-end challenge
+# Trustpair Ruby on Rails challenge
 
-The goal of this challenge is to evaluate the candidates for the position of Ruby back-end developer at [Trustpair](https://ww.trustpair.fr/jobs).
+The goal of this challenge is to evaluate the candidates for the position of Software Developer at [Trustpair](https://www.trustpair.fr/jobs).
 
 ## Exercise
-Starting from the provided CSV [data.csv](https://github.com/trustpair/jobs/tree/master/ruby/data.csv) file that contains a list of companies and their SIRET number, query a public API for retrieving information and produce a result file in JSON.
 
-The data source to use is the SIRENE database. It is made available by _OpenDataSoft_ through a public REST API.
+The City of Paris in France has a data file containing the non-titular permanents staff balance.
 
-### Guideline 
-* You must create a git repository and commit as your work progresses
-  * One commit repository won't be accepted
-  * Once you're done, share us the link to your repo or an archive containing your project, including the git history
-* You need to setup and provide a full test suite using RSpec 3
-* You can use all the gems and tools you need
+They have some CSV files composed with the following headers for each row : 
 
-### Todo
-* Starting from the provided CSV, retrieve corporate information from their SIRET through the API
-  * Call the API only for companies whose SIRET format is valid
-* Generate a JSON file (see below)
-* Display in the terminal the statistics in the expected format (see below)
-
-#### Company parts of the JSON file
-The JSON file must include the following information for each company (API fields to use provided):
-* The company name `l1_normalisee`
-* SIRET `siret`
-* APE code `apen700`
-* The legal nature `libnj`
-* The date of creation `dcren`
-* The address (concatenation of `numvoie`,`typvoie`, `libvoie`, `codpos` and `libcom`)
-
-#### Statistical part of the JSON file
-It must also contain a statistical part, presenting the following information:
-* Number of valid SIRETs
-* Number of invalid SIRETs
-* Number of companies created before 1950
-* Number of companies created between 1950 and 1975
-* Number of companies created between 1976 and 1995
-* Number of companies created before 1995 and 2005
-* Number of companies created after 2005
-
-### Expected result
-* The application must be run from a terminal without any error
-* An `output.json` file must be generated with the right content
-* The console should display the following result with the correct values:
 ```
-Data processing complete
-* Number of valid SIRETs: [XX]
-* Number of invalid SIRETs: [XX]
-* Number of companies created before 1950: [XX]
-* Number of companies created between 1950 and 1975: [XX]
-* Number of companies created between 1976 and 1995: [XX]
-* Number of companies created before 1995 and 2005: [XX]
-* Number of companies created after 2005: [XX]
+Année : year of the collected data
+Collectivité : [COMMUNE, DEPARTEMENT] to which collectivity they belongs (municipal or departemental)
+Type de Contrat : [TEMPS INCOMPLET, TEMPS COMPLET] type of contract (full or part time)
+Emplois: Job
+Niveau: Employee level which differs according to their job 
+Spécialité : domain of activity (library, music, IT, ...)
 ```
 
-### Bonus
-* Support dynamic parameterization of API fields to export to JSON file
-* Caching API data
-* Store JSON result somewhere other than locally in a file
-* Serve the JSON result through a REST API
+- [bilan-social-effectifs-non-titulaires-permanents_1.csv](https://github.com/trustpair/jobs/tree/master/ruby/bilan-social-effectifs-non-titulaires-permanents_1.csv)
+- [bilan-social-effectifs-non-titulaires-permanents_2.csv](https://github.com/trustpair/jobs/tree/master/ruby/bilan-social-effectifs-non-titulaires-permanents_2.csv)
+- [bilan-social-effectifs-non-titulaires-permanents_3.csv](https://github.com/trustpair/jobs/tree/master/ruby/bilan-social-effectifs-non-titulaires-permanents_3.csv)
 
-## Our expectations
-* The solution must be designed so that it can support new needs, eg. change the format of files, add new stats, use another API, etc.
-* Performance is important and we will look at how you have managed to optimize it. Input data could be 40 lines like 400,000
-* There are many possibilities for code optimization and performance improvements so do your best
-* Clean and robust code
+City of Paris needs to perform some analysis on that data according to their gender parity commitment in terms of both types of contract [Type de Contrat] and jobs [Emplois] per year [ANNEE].
 
-*You will present us your work and should justify your choices*
+They have an issue with their CSV files which lack of data related to the number of men and women for each job.
 
-## Resources
-* SIRET API documentation: [OpenDataSoft - API] (https://data.opendatasoft.com/api/v2/console) (be careful to use version 2)
-  * Dataset ID is `sirene@public`
+City of Paris has a public accessible API which can give you those missing data per level [Niveau] for each job [Emplois].
+
+```
+URL: https://opendata.paris.fr/api/records/1.0/search/?dataset=bilan-social-effectifs-non-titulaires-permanents&facet=annee&facet=collectivite&facet=type_de_contrat&facet=emplois&facet=niveau&refine.emplois={EMPLOIS_NAME}
+```
+
+Usage example: https://opendata.paris.fr/api/records/1.0/search/?dataset=bilan-social-effectifs-non-titulaires-permanents&facet=annee&facet=collectivite&facet=type_de_contrat&facet=emplois&facet=niveau&refine.emplois=TECHNICIENS%20SUPERIEURS%20D%27ADMINISTRATIONS%20PARISIENNES
+
+## Requirements
+
+They ask you to create a small web application based on the Ruby On Rails framework with the following requirements:
+
+- A user can Import a csv_file into a relation SQL Database following the csv file headers through an interface;
+  - identical rows cannot be persisted in the database (the newest is the most relevant)
+- Number of Men and Women per job must be retrieved with their public API
+- For each imported job calcul the parity score:
+  - valid if the parity is the gap between the number of men and women per job is less than 15%
+  - invalid otherwise
+- Render in a web interface the list all the jobs ordered by name [EMPLOIS] and by year [ANNEE] with their result of parity
