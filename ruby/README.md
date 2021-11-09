@@ -1,6 +1,6 @@
 # Trustpair Ruby on Rails challenge
 
-The goal of this challenge is to evaluate the candidates for the position of Software Developer at [Trustpair](https://www.trustpair.fr/jobs).
+The goal of this challenge is to evaluate the candidates for the position of Software Developer at [Trustpair](https://trustpair.fr/en/careers/).
 
 ## Exercise
 
